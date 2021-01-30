@@ -1,0 +1,19 @@
+{
+  "Reminders": {
+    "events": [
+      {
+        "theAuthor": "301384462153809921",
+        "theMonth": "1",
+        "theDay": "30",
+        "theHour": "15",
+        "theRightMonth": 0,
+        "theMinutes": "30",
+        "theAmOrPm": "pm",
+        "theClass": "ENSF409",
+        "theReminder": "Test",
+        "dueDate": "2021-01-30T22:30:00.000Z",
+        "thedate": 1612045800000
+      }
+    ]
+  }
+}
