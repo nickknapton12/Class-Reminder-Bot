@@ -1,14 +1,17 @@
 const Discord = require('discord.js')
+
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 client.login("ODAxNjY2NjQxODI5NjkxNDAy.YAkAPQ.ZkvEpO61DWlXw4yG6QXvLsub17c")
 
 let servers = []; //Array of servers
 let notificationUsers = []; // list of users
 let events = []; // This will be array of events
-let signUpChannel = '803791742621057024';
-let submitRemindersChannel = '804205655351099393';
-let approveRemindersChannel = '804205523091849236';
+let signUpChannel = '804860158030774352';
+let submitRemindersChannel = '804858841366921243';
+let approveRemindersChannel = '804859019193352255';
 var signUpMessageId = '';
+var requesetMessageId = '';
+var serverID = '791066068588036147';
 
 
 //database stuff
@@ -27,9 +30,8 @@ client.on('ready', () => {
     console.log("Connected as " + client.user.tag)
     console.log(client.channels.name);
 
-    client.user.setActivity("GME stock", {type: 'WATCHING'}) // fix
+    client.user.setActivity("out for you", {type: 'WATCHING'}) // fix
 
-    let generalChannel = client.channels.cache.get("802294668913410132")
     const now = new Date();
     console.log(now.getHours());
 
@@ -52,7 +54,11 @@ client.on('ready', () => {
         )
         .setFooter('Disclamer: This is in no way a substitute for not knowing when things are due. This is only a additional tool to remind you when a class has something due. If you miss an assignment because my bot did not remind you it is in no way my responsibility, by signing up you agree to this.');
     let signUpChan = client.channels.cache.get(signUpChannel);
-    signUpChan.send(signUpMes).then(signUpMes => {
+
+    console.log(signUpChan)
+
+    if(signUpMessageId == ''){
+        signUpChan.send(signUpMes).then(signUpMes => {
         signUpMes.react('🍺');
         signUpMes.react('0️⃣');
         signUpMes.react('1️⃣');
@@ -64,8 +70,11 @@ client.on('ready', () => {
         signUpMes.react('7️⃣');
         signUpMes.react('8️⃣');
         signUpMessageId = signUpMes.id;
-    });
+        });
+    }
 
+
+    if(requesetMessageId == ''){
     const requestMessage = new Discord.MessageEmbed()
         .setColor('#0099ff')
         .setTitle('HOW TO USE')
@@ -77,9 +86,19 @@ client.on('ready', () => {
 
     let reqChan = client.channels.cache.get(submitRemindersChannel);
     reqChan.send(requestMessage);
+    }
 
-    cacheMembers();
-    loadData();
+    var mainServer = client.guilds.cache.get(serverID);
+
+   
+
+    mainServer.members.fetch().then((members) => {
+        console.log(members);
+        // code...
+    });
+
+    //cacheMembers();
+    //loadData();
 
     //var theServer = client.guilds.cache.get('802294668913410129');
     //theServer.members.cache.find( user => user.id == notificationUsers[0].user.id).send("Test").then(summary => {
@@ -98,24 +117,26 @@ function cacheMembers(){
 
 function loadData(){
     for(let i = 0; i < xpFileUserData.Users.notificationUsers.length; i++){
-        var proccessUser = 0;
-        notificationUsers.push(xpFileUserData.Users.notificationUsers[i]);
+        var proccessUser = xpFileUserData.Users.notificationUsers[i].user.id;
+        console.log(proccessUser);
+        var proccessedUser = client.users.cache.get(proccessUser);
+
+        notificationUsers.push(proccessedUser);
         console.log(notificationUsers[i]);
     }
 
-    for(let i = 0; i < xpFileReminders.Reminders.events.length; i++){
-        var proccessReminder = new reminder(xpFileReminders.Reminders.events[i].theClass, xpFileReminders.Reminders.events[i].theReminder, xpFileReminders.Reminders.events[i].theMonth, xpFileReminders.Reminders.events[i].theDay, xpFileReminders.Reminders.events[i].theHour, xpFileReminders.Reminders.events[i].theMinutes, xpFileReminders.Reminders.events[i].theAmOrPm,xpFileReminders.Reminders.events[i].theAuthor);
+    //events = xpFileReminders.Reminders;
 
-        events.push(proccessReminder);
-        console.log(events[i]);
-    }
+    //for(let i = 0; i < xpFileReminders.Reminders.events.length; i++){
+    //    var proccessReminder = new reminder(xpFileReminders.Reminders.events[i].theClass, xpFileReminders.Reminders.events[i].theReminder, xpFileReminders.Reminders.events[i].theMonth, xpFileReminders.Reminders.events[i].theDay, xpFileReminders.Reminders.events[i].theHour, xpFileReminders.Reminders.events[i].theMinutes, xpFileReminders.Reminders.events[i].theAmOrPm,xpFileReminders.Reminders.events[i].theAuthor);
+
+    //    events.push(proccessReminder);
+    //    console.log(events[i]);
+    //}
 }
 
 client.on('messageReactionAdd', (reaction, user) => {
     if(user == client.user){
-        return
-    }
-    if(reaction.message.author != client.user){
         return
     }
     if(reaction.message.id == signUpMessageId){
@@ -157,6 +178,7 @@ client.on('messageReactionAdd', (reaction, user) => {
         }
 
         if(reaction.emoji.name == '🍺' ){
+            console.log('help')
             addUser(user);
         }
         return
@@ -251,7 +273,9 @@ client.on('message', message => {
 
                 console.log(commands.length)
                 if(commands.length == 8){
-                    notificationRequest(commands);
+                    if(nonDuplicateEvent(commands)){
+                        notificationRequest(commands);
+                    }
                 }else{
                    sendWrongFormatNotice(commands); 
                 }
@@ -267,6 +291,15 @@ client.on('message', message => {
    return
 })
 
+function nonDuplicateEvent(comps){
+    for(let i = 0; i < events.length; i++){
+        if(events[i].theReminder == comps[1] && events[i].theDay == comps[3]){
+            return false;
+        }
+    }
+    return true;
+}
+
 function sendWrongFormatNotice(comps){
     let notApprovedMessage = new Discord.MessageEmbed()
     .setColor('#0099ff')
@@ -275,7 +308,7 @@ function sendWrongFormatNotice(comps){
     .setDescription('Your Reminder request has been auto filtered out for not being in the right format, if you think this is an error please contact CoronaTime!')
     .setFooter("React with checkmark to delete");
 
-    client.users.cache.find(user => user.id == comps[8]).send(notApprovedMessage).then(summary => {
+    client.users.cache.find(user => user.id == comps[comps.length - 1]).send(notApprovedMessage).then(summary => {
         summary.react('✅');
     })
 }
@@ -288,7 +321,7 @@ function sendNotAprovedNotice(comps){
     .setDescription('Your Reminder request for ' + comps[0] + ' ' + comps[1] + ' has been denied, if you think this is an error please contact CoronaTime!')
     .setFooter("React with checkmark to delete");
 
-    client.users.cache.find(user => user.id == comps[8]).send(deniedMessage).then(summary => {
+    client.users.cache.find(user => user.id == comps[7]).send(deniedMessage).then(summary => {
         summary.react('✅');
     })
 }
@@ -335,7 +368,6 @@ function addUser(user){
     xpFileUserData["Users"] = {notificationUsers}; //if not, create it
     fs.writeFileSync(xpPathUserData, JSON.stringify(xpFileUserData, null, 2));
 
-    console.log(notificationUsers[notificationUsers.length - 1].user)
     return;
 }
 
@@ -429,8 +461,9 @@ class reminder{
                         .setDescription("Due: " + this.dueDate.toDateString() + " at " + this.theHour + ":" + this.theMinutes)
                         .setFooter("React with checkmark to delete");
 
-                    console.log(notificationUsers[i].user.id);
-                    //let user = client.guild.members.cache.get(notificationUsers[i].user);
+                    console.log(typeof(notificationUsers[i].user));
+
+
                     notificationUsers[i].user.send(summary).then(summary => {
                         summary.react('✅');
                     })
@@ -455,8 +488,12 @@ function checkForFinishedEvents(){ // Check if any event in the events list is o
 }
 
 setInterval( function() { // sends a daily reminder to all reminders in the events array
-    checkForFinishedEvents();
-    for(let i = 0; i < events.length; i++){
-       events[i].sendReminder();
+    let refClock = new Date();
+    if(refClock.getHours() == 8 && refClock.getMinutes() == 0){
+           checkForFinishedEvents();
+            for(let i = 0; i < events.length; i++){
+            events[i].sendReminder();
     }
-}, 10000) //86400000 is 1 day
+    }
+ 
+}, 60000) //86400000 is 1 day

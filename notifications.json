@@ -3,16 +3,29 @@
     "events": [
       {
         "theAuthor": "301384462153809921",
-        "theMonth": "1",
-        "theDay": "30",
-        "theHour": "15",
-        "theRightMonth": 0,
+        "theMonth": "2",
+        "theDay": "4",
+        "theHour": "9",
+        "theRightMonth": 1,
         "theMinutes": "30",
         "theAmOrPm": "pm",
         "theClass": "ENSF409",
         "theReminder": "Test",
-        "dueDate": "2021-01-30T22:30:00.000Z",
-        "thedate": 1612045800000
+        "dueDate": "2021-02-04T16:30:00.000Z",
+        "thedate": 1612456200000
+      },
+      {
+        "theAuthor": "301384462153809921",
+        "theMonth": "2",
+        "theDay": "4",
+        "theHour": "20",
+        "theRightMonth": 1,
+        "theMinutes": "10",
+        "theAmOrPm": "pm",
+        "theClass": "ENCM369",
+        "theReminder": "quiz",
+        "dueDate": "2021-02-05T03:10:00.000Z",
+        "thedate": 1612494600000
       }
     ]
   }
