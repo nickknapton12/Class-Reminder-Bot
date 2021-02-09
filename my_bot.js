@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
-client.login("ODAxNjY2NjQxODI5NjkxNDAy.YAkAPQ.ZkvEpO61DWlXw4yG6QXvLsub17c")
+client.login("ClientToken")
 
 let servers = []; //Array of servers
 let notificationUsers = []; // list of users
