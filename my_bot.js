@@ -1,17 +1,14 @@
 const Discord = require('discord.js')
-
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
-client.login("ClientToken")
+client.login("")
 
 let servers = []; //Array of servers
 let notificationUsers = []; // list of users
 let events = []; // This will be array of events
-let signUpChannel = '804860158030774352';
-let submitRemindersChannel = '804858841366921243';
-let approveRemindersChannel = '804859019193352255';
+let signUpChannel = '';
+let submitRemindersChannel = '';
+let approveRemindersChannel = '';
 var signUpMessageId = '';
-var requesetMessageId = '';
-var serverID = '791066068588036147';
 
 
 //database stuff
@@ -24,16 +21,18 @@ var xpPathReminders = 'notifications.json'
 var xpReadReminders = fs.readFileSync(xpPathReminders);
 var xpFileReminders = JSON.parse(xpReadReminders);
 
+//var xpPathChannel = 'channelData.json'
+//var xpReadChannel = fs.readFileSync(xpPathChannel);
+//var xpFileChannel = JSON.parse(xpReadChannel);
+
 
 
 client.on('ready', () => {
-    console.log("Connected as " + client.user.tag)
-    console.log(client.channels.name);
+    console.log("Connected as " + client.user.tag);
 
-    client.user.setActivity("out for you", {type: 'WATCHING'}) // fix
+    client.user.setActivity("out for you", {type: 'WATCHING'});
 
-    const now = new Date();
-    console.log(now.getHours());
+    loadData();
 
     const signUpMes = new Discord.MessageEmbed()
         .setColor('#0099ff')
@@ -53,28 +52,28 @@ client.on('ready', () => {
             { name: 'React: 8️⃣', value: 'For ENGG 481', inline:true}
         )
         .setFooter('Disclamer: This is in no way a substitute for not knowing when things are due. This is only a additional tool to remind you when a class has something due. If you miss an assignment because my bot did not remind you it is in no way my responsibility, by signing up you agree to this.');
+    
     let signUpChan = client.channels.cache.get(signUpChannel);
-
-    console.log(signUpChan)
-
     if(signUpMessageId == ''){
         signUpChan.send(signUpMes).then(signUpMes => {
-        signUpMes.react('🍺');
-        signUpMes.react('0️⃣');
-        signUpMes.react('1️⃣');
-        signUpMes.react('2️⃣');
-        signUpMes.react('3️⃣');
-        signUpMes.react('4️⃣');
-        signUpMes.react('5️⃣');
-        signUpMes.react('6️⃣');
-        signUpMes.react('7️⃣');
-        signUpMes.react('8️⃣');
-        signUpMessageId = signUpMes.id;
-        });
+            signUpMes.react('🍺');
+            signUpMes.react('0️⃣');
+            signUpMes.react('1️⃣');
+            signUpMes.react('2️⃣');
+            signUpMes.react('3️⃣');
+            signUpMes.react('4️⃣');
+            signUpMes.react('5️⃣');
+            signUpMes.react('6️⃣');
+            signUpMes.react('7️⃣');
+            signUpMes.react('8️⃣');
+            signUpMessageId = signUpMes.id;
+        });  
+    }else{
+        console.log('test here');
+        client.channels.cache.get(signUpChannel).messages.fetch(signUpMessageId);
     }
+    
 
-
-    if(requesetMessageId == ''){
     const requestMessage = new Discord.MessageEmbed()
         .setColor('#0099ff')
         .setTitle('HOW TO USE')
@@ -85,58 +84,28 @@ client.on('ready', () => {
         .addField('IMPORTANT NOTES:', '1) Write the Class in all caps and no space between course code eg. ENSF409 or ENCM369 or CPSC319  \n\n 2) The Event also should have no spaces in it, for assignment 1, write: Assignment1. For Test 2, write: Test2, however caps doesnt matter for this field.  \n\n3) The month, day, hour, and minutes should all be numbers!  \n\n 4) The hour MUST be in 24 version for now! \n\n5) The last field simply write "am" or "pm"');
 
     let reqChan = client.channels.cache.get(submitRemindersChannel);
-    reqChan.send(requestMessage);
-    }
-
-    var mainServer = client.guilds.cache.get(serverID);
-
-   
-
-    mainServer.members.fetch().then((members) => {
-        console.log(members);
-        // code...
-    });
-
-    //cacheMembers();
-    //loadData();
-
-    //var theServer = client.guilds.cache.get('802294668913410129');
-    //theServer.members.cache.find( user => user.id == notificationUsers[0].user.id).send("Test").then(summary => {
-    //    summary.react('✅');
-    //})
-
-    //console.log(notificationUsers[0].user.id)
-    //client.users.cache.find(user => user.id == notificationUsers[0].user.id).send("Test").then(summary => {
-    //    summary.react('✅');
-    //})
+    //reqChan.send(requestMessage);
 })
-
-function cacheMembers(){
-    //client.channels.cache.find('804205655351099393').cache.uses.find()
-}
 
 function loadData(){
     for(let i = 0; i < xpFileUserData.Users.notificationUsers.length; i++){
-        var proccessUser = xpFileUserData.Users.notificationUsers[i].user.id;
-        console.log(proccessUser);
-        var proccessedUser = client.users.cache.get(proccessUser);
-
-        notificationUsers.push(proccessedUser);
+        notificationUsers.push(xpFileUserData.Users.notificationUsers[i]);
         console.log(notificationUsers[i]);
     }
 
-    //events = xpFileReminders.Reminders;
+    for(let i = 0; i < xpFileReminders.Reminders.events.length; i++){
+        var proccessReminder = new reminder(xpFileReminders.Reminders.events[i].theClass, xpFileReminders.Reminders.events[i].theReminder, xpFileReminders.Reminders.events[i].theMonth, xpFileReminders.Reminders.events[i].theDay, xpFileReminders.Reminders.events[i].theHour, xpFileReminders.Reminders.events[i].theMinutes, xpFileReminders.Reminders.events[i].theAmOrPm,xpFileReminders.Reminders.events[i].theAuthor);
 
-    //for(let i = 0; i < xpFileReminders.Reminders.events.length; i++){
-    //    var proccessReminder = new reminder(xpFileReminders.Reminders.events[i].theClass, xpFileReminders.Reminders.events[i].theReminder, xpFileReminders.Reminders.events[i].theMonth, xpFileReminders.Reminders.events[i].theDay, xpFileReminders.Reminders.events[i].theHour, xpFileReminders.Reminders.events[i].theMinutes, xpFileReminders.Reminders.events[i].theAmOrPm,xpFileReminders.Reminders.events[i].theAuthor);
-
-    //    events.push(proccessReminder);
-    //    console.log(events[i]);
-    //}
+        events.push(proccessReminder);
+        console.log(events[i]);
+    }
 }
 
 client.on('messageReactionAdd', (reaction, user) => {
     if(user == client.user){
+        return
+    }
+    if(reaction.message.author != client.user){
         return
     }
     if(reaction.message.id == signUpMessageId){
@@ -178,7 +147,6 @@ client.on('messageReactionAdd', (reaction, user) => {
         }
 
         if(reaction.emoji.name == '🍺' ){
-            console.log('help')
             addUser(user);
         }
         return
@@ -270,17 +238,7 @@ client.on('message', message => {
                 var event = message.content.substring(8);
                 var commands = event.split(" ");
                 commands.push(message.author.id)
-
-                console.log(commands.length)
-                if(commands.length == 8){
-                    if(nonDuplicateEvent(commands)){
-                        notificationRequest(commands);
-                    }
-                }else{
-                   sendWrongFormatNotice(commands); 
-                }
-                
-                
+                notificationRequest(commands);
                 message.delete();
             }        
         }
@@ -291,37 +249,15 @@ client.on('message', message => {
    return
 })
 
-function nonDuplicateEvent(comps){
-    for(let i = 0; i < events.length; i++){
-        if(events[i].theReminder == comps[1] && events[i].theDay == comps[3]){
-            return false;
-        }
-    }
-    return true;
-}
-
-function sendWrongFormatNotice(comps){
-    let notApprovedMessage = new Discord.MessageEmbed()
-    .setColor('#0099ff')
-    .setTitle('Reminder Request Denied')
-    .setAuthor('CoronaTime', 'https://assets.prucenter.com/brew-images/_639x639_crop_center-center_none/corona.jpg?mtime=20180403160236&focal=none')
-    .setDescription('Your Reminder request has been auto filtered out for not being in the right format, if you think this is an error please contact CoronaTime!')
-    .setFooter("React with checkmark to delete");
-
-    client.users.cache.find(user => user.id == comps[comps.length - 1]).send(notApprovedMessage).then(summary => {
-        summary.react('✅');
-    })
-}
-
 function sendNotAprovedNotice(comps){
     let deniedMessage = new Discord.MessageEmbed()
     .setColor('#0099ff')
-    .setTitle('Reminder Request Denied')
+    .setTitle('Reminder Denied')
     .setAuthor('CoronaTime', 'https://assets.prucenter.com/brew-images/_639x639_crop_center-center_none/corona.jpg?mtime=20180403160236&focal=none')
-    .setDescription('Your Reminder request for ' + comps[0] + ' ' + comps[1] + ' has been denied, if you think this is an error please contact CoronaTime!')
+    .setDescription('Your Reminder request for ' + comps[0] + ' ' + comps[1] + ' has been denied')
     .setFooter("React with checkmark to delete");
 
-    client.users.cache.find(user => user.id == comps[7]).send(deniedMessage).then(summary => {
+    client.users.cache.find(user => user.id == comps[8]).send(deniedMessage).then(summary => {
         summary.react('✅');
     })
 }
@@ -329,7 +265,7 @@ function sendNotAprovedNotice(comps){
 function sendAprovedNotice(comps){
     let approveMessage = new Discord.MessageEmbed()
     .setColor('#0099ff')
-    .setTitle('Reminder Request Approved')
+    .setTitle('Reminder Approved')
     .setAuthor('CoronaTime', 'https://assets.prucenter.com/brew-images/_639x639_crop_center-center_none/corona.jpg?mtime=20180403160236&focal=none')
     .setDescription('Your Reminder request for ' + comps[0] + ' ' + comps[1] + ' has been approved!')
     .setFooter("React with checkmark to delete");
@@ -368,6 +304,7 @@ function addUser(user){
     xpFileUserData["Users"] = {notificationUsers}; //if not, create it
     fs.writeFileSync(xpPathUserData, JSON.stringify(xpFileUserData, null, 2));
 
+    console.log(notificationUsers[notificationUsers.length - 1].user)
     return;
 }
 
@@ -381,11 +318,7 @@ class aUser{
 function addUserSubscription(user, subscription){
     for(let i = 0; i < notificationUsers.length; i++){
         if(notificationUsers[i].user.id == user.id){
-            for(let j = 0; j < notificationUsers[i].subscriptions.length; j++){
-                if(notificationUsers[i].subscriptions[j] == subscription){
-                    return;
-                }
-            }
+
             notificationUsers[i].subscriptions.push(subscription);
 
             xpFileUserData[xpFileUserData.Users.notificationUsers[i]] = {subscriptions : notificationUsers[i].subscriptions};
@@ -413,10 +346,10 @@ function removeUserSubscription(user, subscription){ // Will be for removing sub
     for(let i = 0; i < notificationUsers.length; i++){
         if(notificationUsers[i].user.id == user.id){
             for(let j = 0; j < notificationUsers[i].subscriptions.length; j++){
-                console.log("there");
                 if(notificationUsers[i].subscriptions[j] == subscription){
-                    console.log("here");
                     notificationUsers[i].subscriptions.splice(j, 1);
+                    xpFileUserData[xpFileUserData.Users.notificationUsers[i]] = {subscriptions : notificationUsers[i].subscriptions};
+                    fs.writeFileSync(xpPathUserData, JSON.stringify(xpFileUserData, null, 2));
                 }
             }
         }
@@ -452,8 +385,6 @@ class reminder{
         for(let i = 0; i < notificationUsers.length; i++){
            for(let j = 0; j < notificationUsers[i].subscriptions.length; j++){
                if(notificationUsers[i].subscriptions[j] == this.theClass){
-                    console.log('Sending ' + notificationUsers[i].user.toString() + " " + this.theClass + " notification");
-                    
                     var summary = new Discord.MessageEmbed()
                         .setColor('#0099ff')
                         .setTitle(this.theClass + " " + this.theReminder)
@@ -461,16 +392,9 @@ class reminder{
                         .setDescription("Due: " + this.dueDate.toDateString() + " at " + this.theHour + ":" + this.theMinutes)
                         .setFooter("React with checkmark to delete");
 
-                    console.log(typeof(notificationUsers[i].user));
-
-
-                    notificationUsers[i].user.send(summary).then(summary => {
-                        summary.react('✅');
+                    client.users.fetch(notificationUsers[i].user.id).then(user => {
+                        user.send(summary).then(message => message.react('✅'));
                     })
-                    //console.log(userToSend);
-                    //userToSend.send(summary).then(summary => {
-                    //    summary.react('✅');
-                    //})
                 }
            }
         }
@@ -482,18 +406,17 @@ function checkForFinishedEvents(){ // Check if any event in the events list is o
     for(let i = 0; i < events.length; i++){
         if(events[i].thedate < refDate){
             events.splice(i, 1);
+            xpFileReminders["Reminders"] = {events}; //if not, create it
+            fs.writeFileSync(xpPathReminders, JSON.stringify(xpFileReminders, null, 2));
             console.log("reminder removed");
         }
     }
 }
 
 setInterval( function() { // sends a daily reminder to all reminders in the events array
-    let refClock = new Date();
-    if(refClock.getHours() == 8 && refClock.getMinutes() == 0){
-           checkForFinishedEvents();
-            for(let i = 0; i < events.length; i++){
-            events[i].sendReminder();
+    checkForFinishedEvents();
+    console.log("Sending Messages")
+    for(let i = 0; i < events.length; i++){
+       events[i].sendReminder();
     }
-    }
- 
 }, 60000) //86400000 is 1 day
