@@ -1,32 +1,5 @@
 {
   "Users": {
-    "notificationUsers": [
-      {
-        "user": {
-          "id": "301384462153809921",
-          "system": null,
-          "locale": null,
-          "flags": null,
-          "username": "CoronaTime",
-          "bot": false,
-          "discriminator": "9642",
-          "avatar": "5d55d4c1828d0c704c6cf71291bf3419",
-          "lastMessageChannelID": null,
-          "createdTimestamp": 1491926055230,
-          "defaultAvatarURL": "https://cdn.discordapp.com/embed/avatars/2.png",
-          "tag": "CoronaTime#9642",
-          "avatarURL": "https://cdn.discordapp.com/avatars/301384462153809921/5d55d4c1828d0c704c6cf71291bf3419.webp",
-          "displayAvatarURL": "https://cdn.discordapp.com/avatars/301384462153809921/5d55d4c1828d0c704c6cf71291bf3419.webp"
-        },
-        "subscriptions": [
-          "ENSF409"
-        ]
-      }
-    ]
-  },
-  "[object Object]": {
-    "subscriptions": [
-      "ENSF409"
-    ]
+    
   }
 }
