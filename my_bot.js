@@ -246,6 +246,9 @@ client.on('message', message => {
             message.delete();
         }
     }
+    if(message.content == "!getReminders"){
+        getReminders(message.author);
+    }
    return
 })
 
@@ -380,6 +383,23 @@ class reminder{
         console.log(this.thedate);
         console.log('created reminder')
     }
+    
+    requestReminder(index){
+        for(let j = 0; j < notificationUsers[index].subscriptions.length; j++){
+            if(notificationUsers[i].subscriptions[j] == this.theClass){
+                 var summary = new Discord.MessageEmbed()
+                     .setColor('#0099ff')
+                     .setTitle(this.theClass + " " + this.theReminder)
+                     .setAuthor('CoronaTime', 'https://assets.prucenter.com/brew-images/_639x639_crop_center-center_none/corona.jpg?mtime=20180403160236&focal=none')
+                     .setDescription("Due: " + this.dueDate.toDateString() + " at " + this.theHour + ":" + this.theMinutes)
+                     .setFooter("React with checkmark to delete");
+
+                 client.users.fetch(notificationUsers[index].user.id).then(user => {
+                     user.send(summary).then(message => message.react('✅'));
+                 })
+             }
+        }
+    }
 
     sendReminder(){
         for(let i = 0; i < notificationUsers.length; i++){
@@ -397,6 +417,17 @@ class reminder{
                     })
                 }
            }
+        }
+    }
+}
+
+function getReminders(user){
+    for(let i = 0; i < notificationUsers.length; i++){
+        if(notificationUsers[i].id == user.id){
+            for(let j = 0; j < events.length; j++){
+                events[j].requestReminder(i);
+            }
+            return;
         }
     }
 }
